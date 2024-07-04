@@ -1,0 +1,16 @@
+Инструкция по запуску приложения из исходного кода
+1. Загрузите архив, распакуйте и перейдите в корневую папку программы
+2. Создайте виртуальное окружение и установите зависимости, для этого в командной строке выполните:
+   conda:
+         conda create -n name_env -y python=3.7 
+         conda activate name_env
+         pip install -r requirements.txt
+   pip:  
+         python -m venv name_venv 
+         source name_venv/bin/activate
+         pip install -r requirements.txt
+3. Запустите приложение, выполнив команду
+         python photo_editor.py
+
+   
+  
