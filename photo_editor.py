@@ -165,9 +165,10 @@ class MainWindow(QWidget):
         self.move(x, y)
 
         height, width = self.displayed_image.shape[:2]
+        self.functions_layout.addWidget(self.size_label)
         self.size_label.setText(
             f'Размер отображаемого изображения: {width}x{height}')
-        self.functions_layout.addWidget(self.size_label)
+
         self.functions_layout.addWidget(self.channel_btn)
 
         self.functions_layout.addWidget(self.channel_combo_box)
@@ -254,13 +255,12 @@ class MainWindow(QWidget):
             if image is not None:
                 self.selected_image = Image(image, "Без эффекта", )
                 self.displayed_image = self.selected_image.get_image()
-
-                self.display_image()
                 if not self.is_loaded:
                     self.add_function_panel()
                     self.is_loaded = True
                 else:
                     self.update_function_panel()
+                self.display_image()
                 self.actions = []
             else:
                 error_box = QMessageBox()
@@ -333,20 +333,6 @@ class MainWindow(QWidget):
         self.draw_coordinates_list = self.selected_image.get_draw_coordinates().copy()
         self.rotate_angels_list = self.selected_image.get_angel_rotation().copy()
 
-        height, width, channels = self.displayed_image.shape
-
-        width_ratio = 1000 / width  # Определение коэффициента масштабирования для ширины
-        scaled_width = 1000
-        scaled_height = int(height * width_ratio)
-
-        if scaled_height > 500:  # Регулирование высоты, чтобы изображение не было слишком высоким
-            height_ratio = 500 / scaled_height
-            scaled_height = 500
-            scaled_width = int(scaled_width * height_ratio)
-
-        self.displayed_image = cv2.resize(
-            self.displayed_image, (scaled_width, scaled_height))
-
         for i in self.actions:
             try:
                 if i == "crop":
@@ -363,14 +349,20 @@ class MainWindow(QWidget):
         self.change_channel(self.selected_image.get_color_channel())
         height, width, channels = self.displayed_image.shape
 
-        width_ratio = 1000 / width
-        scaled_width = 1000
-        scaled_height = int(height * width_ratio)
+        self.update_function_panel()
 
-        if scaled_height > 500:
-            height_ratio = 500 / scaled_height
-            scaled_height = 500
-            scaled_width = int(scaled_width * height_ratio)
+        if height < 500 and width < 1000:
+            scaled_height = height
+            scaled_width = width
+        else:
+            width_ratio = 1000 / width
+            scaled_width = 1000
+            scaled_height = int(height * width_ratio)
+
+            if scaled_height > 500:
+                height_ratio = 500 / scaled_height
+                scaled_height = 500
+                scaled_width = int(scaled_width * height_ratio)
 
         image = cv2.resize(self.displayed_image, (scaled_width, scaled_height))
         bytes_per_line = channels * scaled_width
@@ -387,7 +379,6 @@ class MainWindow(QWidget):
             q_img)
         painter.end()
         self.displayed_image = image
-        self.update_function_panel()
         self.label_image.setPixmap(QPixmap.fromImage(new_image))
         self.editing_is_complete = True
 
@@ -491,15 +482,13 @@ class MainWindow(QWidget):
             x1, y1, x2, y2 = [sb.value() for sb in self.draw_spin_boxes]
             self.selected_image.draw_coordinates.append([y1, y2, x1, x2])
             self.actions.append("draw")
-            print("yt")
             self.display_image()
         else:
             coordinates_list = self.draw_coordinates_list
-            print(self.draw_coordinates_list)
             if coordinates_list is not []:
                 d_c = coordinates_list[0]
                 cv2.rectangle(
-                    self.displayed_image, (d_c[2], d_c[0]), (d_c[3], d_c[1]), (255, 0, 0), 2)
+                    self.displayed_image, (d_c[2], d_c[0]), (d_c[3], d_c[1]), (255, 0, 0), 3)
 
     def cancel_changes(self):
         """Отменяет все действия, совершенные над изображением
