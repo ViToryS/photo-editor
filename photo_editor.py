@@ -48,7 +48,7 @@ class MainWindow(QWidget):
             Поворачивает изображение по значению угла
         draw_blue_rectangle(self):
         Рисует синий прямоугольник на изображении по координатам двух противоположных углов
-        cancel_changes(self):
+        cancel_changes(self)
             Отменяет все действия, совершенные над изображением
         """
 
@@ -102,7 +102,8 @@ class MainWindow(QWidget):
         (self.channel_combo_box.currentIndexChanged.connect
          (lambda index: self.change_channel(self.channel_combo_box.itemText(index))))
 
-        self.crop_label = QLabel("Введите координаты для обрезки изображения: ")
+        self.crop_label = QLabel(
+            "Введите координаты для обрезки изображения: ")
         self.crop_button = QPushButton("Обрезать изображение")
         self.crop_button.clicked.connect(self.crop_image)
         self.crop_spin_boxes = []
@@ -119,14 +120,18 @@ class MainWindow(QWidget):
         self.btn_load_image = QPushButton("Загрузить изображение", self)
         self.btn_load_image.clicked.connect(self.load_image)
         self.btn_load_image.setMinimumWidth(300)
-        self.button_layout.addWidget(self.btn_load_image, alignment=Qt.AlignCenter)
+        self.button_layout.addWidget(
+            self.btn_load_image,
+            alignment=Qt.AlignCenter)
         self.layout.addWidget(self.button_widget)
 
         self.btn_capture_image = QPushButton(
             "Сделать снимок с веб-камеры", self)
         self.btn_capture_image.clicked.connect(self.capture_image)
         self.btn_capture_image.setMinimumWidth(300)
-        self.button_layout.addWidget(self.btn_capture_image, alignment=Qt.AlignCenter)
+        self.button_layout.addWidget(
+            self.btn_capture_image,
+            alignment=Qt.AlignCenter)
 
         self.channel_btn = QLabel("Выберите цветовой канал: ")
         self.size_label = QLabel()
@@ -256,10 +261,13 @@ class MainWindow(QWidget):
                     self.is_loaded = True
                 else:
                     self.update_function_panel()
+                self.actions = []
             else:
                 error_box = QMessageBox()
                 error_box.setIcon(QMessageBox.Critical)
-                error_box.setText("Ошибка загрузки изображения")
+                error_box.setText(
+                    "Ошибка загрузки изображения,\nпопробуйте выбрать другое изображение или"
+                    " поменять директорию")
                 error_box.setWindowTitle("Ошибка")
                 error_box.exec_()
 
@@ -293,6 +301,7 @@ class MainWindow(QWidget):
                     self.is_loaded = True
                 else:
                     self.update_function_panel()
+                self.actions = []
             else:
                 error_box = QMessageBox()
                 error_box.setIcon(QMessageBox.Critical)
@@ -415,7 +424,8 @@ class MainWindow(QWidget):
             if x2 <= x1 or y2 <= y1:
                 error_box = QMessageBox()
                 error_box.setIcon(QMessageBox.Critical)
-                error_box.setText("Вторые координаты должны быть больше первых")
+                error_box.setText(
+                    "Вторые координаты должны быть больше первых")
                 error_box.setWindowTitle("Ошибка")
                 error_box.exec_()
                 return
@@ -438,11 +448,9 @@ class MainWindow(QWidget):
         """
         if self.editing_is_complete:
             if self.actions != [] and self.actions[-1] == "rotate":
-                print(self.actions)
                 old_angel = self.selected_image.get_angel_rotation()[-1]
                 self.selected_image.angel_rotation.append(
                     self.rotation_spin_box.value() + old_angel)
-                print(self.rotation_spin_box.value() + old_angel)
                 self.selected_image.angel_rotation.pop(-2)
             else:
                 self.selected_image.angel_rotation.append(
